@@ -1,0 +1,35 @@
+import qrcode
+from PIL import Image
+
+def generate_qr_code(data, logo_path=None, output_path="output_qr_code.png"):
+    # Генерація QR-коду
+    qr = qrcode.QRCode(
+        version=1,
+        error_correction=qrcode.constants.ERROR_CORRECT_L,
+        box_size=10,
+        border=4,
+    )
+    qr.add_data(data)
+    qr.make(fit=True)
+
+    # Створення зображення QR-коду
+    qr_img = qr.make_image(fill_color="black", back_color="white")
+
+    # Додавання логотипу (якщо задано)
+    if logo_path:
+        try:
+            logo = Image.open(logo_path)
+            logo = logo.resize((qr_img.size[0] // 4, qr_img.size[1] // 4))
+            qr_img.paste(logo, (qr_img.size[0] // 2 - logo.size[0] // 2, qr_img.size[1] // 2 - logo.size[1] // 2))
+        except Exception as e:
+            print(f"Помилка при додаванні логотипу: {e}")
+
+    # Збереження зображення QR-коду
+    qr_img.save(output_path)
+    print(f"QR-код був збережений у {output_path}")
+
+if __name__ == "__main__":
+    # Запуск функції генерації QR-коду
+    data_to_encode = "https://example.com"
+    logo_path = "path/to/your/logo.png"  # Вкажіть шлях до свого логотипу
+    generate_qr_code(data_to_encode, logo_path)
